@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>⚡ SMS Bomber v9 — Premium</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+  :root {
+    --bg-deep: #050508;
+    --bg-card: rgba(12, 12, 18, 0.92);
+    --border: rgba(255, 255, 255, 0.06);
+    --accent: #6366f1;
+    --accent2: #a855f7;
+    --accent3: #22d3ee;
+    --success: #10b981;
+    --danger: #f43f5e;
+    --warn: #f59e0b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --radius: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-deep);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 16px 14px 100px;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(99, 102, 241, 0.18), transparent),
+      radial-gradient(ellipse 60% 40% at 90% 10%, rgba(168, 85, 247, 0.12), transparent),
+      radial-gradient(ellipse 50% 30% at 50% 100%, rgba(34, 211, 238, 0.08), transparent);
+    background-attachment: fixed;
+  }
+
+  .app { max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
+
+  .header {
+    text-align: center;
+    padding: 28px 16px 22px;
+    background: linear-gradient(145deg, rgba(18,18,28,0.95), rgba(12,12,20,0.98));
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 40%, #c4b5fd 70%, #22d3ee 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header .sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .header .owner {
+    margin-top: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 999px;
+    font-size: 12px;
+    color: #c7d2fe;
+  }
+  .header .owner a { color: #a5b4fc; text-decoration: none; font-weight: 600; }
+
+  .user-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    backdrop-filter: blur(12px);
+  }
+  .user-bar .uid {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .user-bar .coins {
+    font-size: 17px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    background: linear-gradient(90deg, #fbbf24, #f59e0b, #f97316);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 5px;
+  }
+  .tab {
+    flex: 1;
+    padding: 11px 4px;
+    text-align: center;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    color: var(--muted);
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .tab.active {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.45);
+  }
+
+  .tab-page { display: none; }
+  .tab-page.active { display: block; }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  }
+  .card-title {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #a5b4fc;
+    margin-bottom: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: linear-gradient(180deg, #6366f1, #a855f7);
+    border-radius: 2px;
+  }
+
+  label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin: 10px 0 5px;
+    letter-spacing: 0.8px;
+    font-weight: 500;
+  }
+
+  input, textarea, select {
+    width: 100%;
+    padding: 13px 14px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 90px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    font-family: inherit;
+    margin-top: 12px;
+  }
+  .btn:active:not(:disabled) { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #fff;
+    box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
+  }
+  .btn-danger {
+    background: linear-gradient(135deg, #e11d48, #f43f5e);
+    color: #fff;
+    box-shadow: 0 6px 24px rgba(244, 63, 94, 0.35);
+  }
+  .btn-success {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #fff;
+    box-shadow: 0 6px 24px rgba(16, 185, 129, 0.35);
+  }
+  .btn-ghost {
+    background: rgba(99, 102, 241, 0.1);
+    color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+  }
+  .btn-sm { padding: 8px 12px; font-size: 11px; width: auto; margin: 0; }
+
+  .blast-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .blast-btn {
+    padding: 16px 8px !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+    border-radius: 14px !important;
+    margin: 0 !important;
+  }
+  #startBtn {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #fff;
+    box-shadow: 0 6px 28px rgba(16, 185, 129, 0.4);
+  }
+  #stopBtn {
+    background: linear-gradient(135deg, #e11d48, #f43f5e);
+    color: #fff;
+    box-shadow: 0 6px 28px rgba(244, 63, 94, 0.4);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .stat-box {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .stat-box .num {
+    font-size: 24px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    background: linear-gradient(90deg, #a5b4fc, #22d3ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-box .lbl {
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 12px 0 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4f46e5, #a855f7, #22d3ee);
+    border-radius: 3px;
+    transition: width 0.35s ease;
+    background-size: 200% 100%;
+    animation: shimmer 2.5s linear infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #a5b4fc;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .live-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    color: #a5b4fc;
+    margin-top: 10px;
+  }
+  .live-status .pulse {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 12px var(--success);
+    animation: pulse-dot 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.75); }
+  }
+
+  .plans-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .plan-card {
+    background: linear-gradient(160deg, rgba(20,20,32,0.95), rgba(12,12,20,0.98));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s ease;
+    cursor: pointer;
+  }
+  .plan-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 12px 32px rgba(99, 102, 241, 0.25);
+  }
+  .plan-card.popular {
+    border-color: rgba(245, 158, 11, 0.5);
+    box-shadow: 0 0 28px rgba(245, 158, 11, 0.15);
+  }
+  .plan-card.popular::before {
+    content: '⭐ MOST POPULAR';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: linear-gradient(90deg, #f59e0b, #f97316);
+    color: #000;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 5px 0;
+  }
+  .plan-card.popular .plan-name { margin-top: 20px; }
+  .plan-card.unlimited {
+    grid-column: span 2;
+    border-color: rgba(34, 211, 238, 0.4);
+    box-shadow: 0 0 28px rgba(34, 211, 238, 0.12);
+  }
+  .plan-card.unlimited::before {
+    content: '🔥 LIFETIME UNLIMITED';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: linear-gradient(90deg, #22d3ee, #6366f1);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 5px 0;
+  }
+  .plan-card.unlimited .plan-name { margin-top: 20px; }
+
+  .plan-name {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #c7d2fe;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .plan-coins {
+    font-size: 26px;
+    font-weight: 900;
+    font-family: 'JetBrains Mono', monospace;
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 8px 0 2px;
+  }
+  .plan-coins-lbl {
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .plan-price {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--success);
+    margin: 8px 0;
+  }
+  .plan-buy-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    font-family: inherit;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #fff;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .plan-buy-btn:active { transform: scale(0.97); }
+
+  .notice {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: #fbbf24;
+    margin-bottom: 12px;
+    line-height: 1.55;
+  }
+  .notice.telegram {
+    background: rgba(14, 165, 233, 0.08);
+    border-color: rgba(14, 165, 233, 0.3);
+    color: #38bdf8;
+  }
+  .notice.red {
+    background: rgba(244, 63, 94, 0.08);
+    border-color: rgba(244, 63, 94, 0.3);
+    color: #fb7185;
+  }
+
+  .admin-lock {
+    text-align: center;
+    padding: 48px 20px;
+  }
+  .admin-lock .icon {
+    font-size: 42px;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, #a5b4fc, #22d3ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .admin-lock .title {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-bottom: 20px;
+    color: #a5b4fc;
+  }
+
+  .code-list { max-height: 280px; overflow-y: auto; margin-top: 10px; }
+  .code-item {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .code-item .code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--success);
+    letter-spacing: 0.5px;
+  }
+  .code-item .info { font-size: 10px; color: var(--muted); margin-top: 3px; }
+  .code-item.used { opacity: 0.45; }
+  .code-item.used .code { color: var(--danger); text-decoration: line-through; }
+
+  .pending-item {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .pending-item .row-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .pending-item .uid {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #a5b4fc;
+  }
+  .pending-item .plan-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+  }
+  .pending-item .details {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .pending-item .details code {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .pending-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .btn-approve {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .btn-reject {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #e11d48, #f43f5e);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 99998;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: linear-gradient(160deg, rgba(18,18,28,0.98), rgba(10,10,16,0.99));
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 380px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 22px;
+    color: #a5b4fc;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-weight: 700;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-title {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    background: linear-gradient(90deg, #a5b4fc, #22d3ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .qr-wrap {
+    background: #fff;
+    border-radius: 14px;
+    padding: 12px;
+    margin: 14px auto;
+    width: 240px;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .qr-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-120px);
+    background: rgba(18,18,28,0.98);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    border-radius: 14px;
+    padding: 14px 22px;
+    font-size: 13px;
+    color: var(--text);
+    z-index: 99999;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    max-width: 90%;
+    text-align: center;
+    font-weight: 500;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { border-color: rgba(244, 63, 94, 0.5); }
+  .toast.success { border-color: rgba(16, 185, 129, 0.5); }
+  .toast.warn { border-color: rgba(245, 158, 11, 0.5); }
+
+  .float-tg {
+    position: fixed;
+    bottom: 22px;
+    right: 18px;
+    z-index: 999;
+    background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+    color: #fff;
+    padding: 14px 18px;
+    border-radius: 999px;
+    box-shadow: 0 8px 28px rgba(14, 165, 233, 0.45);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: pulse-tg 2.2s ease-in-out infinite;
+  }
+  .float-tg .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 10px #34d399;
+  }
+  @keyframes pulse-tg {
+    0%, 100% { box-shadow: 0 8px 28px rgba(14, 165, 233, 0.45); }
+    50% { box-shadow: 0 8px 36px rgba(14, 165, 233, 0.7), 0 0 20px rgba(34, 211, 238, 0.3); }
+  }
+
+  .footer-card {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(160deg, rgba(18,18,28,0.95), rgba(12,12,20,0.98));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-top: 8px;
+  }
+  .footer-card .made {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .footer-card .name {
+    font-size: 15px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #a5b4fc, #c4b5fd, #22d3ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hidden { display: none !important; }
+  .row { display: flex; gap: 10px; }
+  .row .btn { flex: 1; }
+  .flex-between { display: flex; justify-content: space-between; align-items: center; }
+  .mt-8 { margin-top: 8px; }
+  .tag {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    font-weight: 700;
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+  }
+  .tag.yellow { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border-color: rgba(245, 158, 11, 0.35); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <h1>⚡ SMS Bomber v9</h1>
+    <div class="sub">Premium Edition</div>
+    <div class="owner">
+      Owner · <a href="https://t.me/amarstarxx" target="_blank">@Gtumz</a>
+    </div>
+  </div>
+
+  <div class="user-bar">
+    <div class="uid" id="userIdDisplay">ID: loading…</div>
+    <div class="coins" id="coinDisplay">💎 0</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('bomber')">💣 Bomber</div>
+    <div class="tab" onclick="switchTab('plans')">💎 Plans</div>
+    <div class="tab" onclick="switchTab('redeem')">🎫 Redeem</div>
+    <div class="tab" onclick="switchTab('admin')">👑 Admin</div>
+  </div>
+
+  <!-- BOMBER -->
+  <div id="page-bomber" class="tab-page active">
+    <div class="card">
+      <div class="card-title">Target Configuration</div>
+      <div class="notice red">
+        ⚠️ <b>Ek baar blast start = poore coins deduct. No refund, no matter what.</b>
+      </div>
+      <label>PHONE NUMBER (with country code)</label>
+      <input type="tel" id="targetNum" placeholder="919876543210" maxlength="15" autocomplete="off">
+      <label>MESSAGE</label>
+      <textarea id="msgText" placeholder="Your message here…">Hello from Bomber v9</textarea>
+      <div class="row">
+        <div style="flex:1">
+          <label>SMS COUNT</label>
+          <input type="number" id="smsCount" value="10" min="1" max="500">
+        </div>
+        <div style="flex:1">
+          <label>SPEED (ms)</label>
+          <input type="number" id="sendSpeed" value="200" min="50" max="2000">
+        </div>
+      </div>
+      <div class="blast-controls">
+        <button class="btn blast-btn" id="startBtn" onclick="startBlast()">▶ START</button>
+        <button class="btn blast-btn" id="stopBtn" onclick="stopBlast()" disabled>⏹ STOP</button>
+      </div>
+    </div>
+
+    <div class="card" id="progressCard" style="display:none">
+      <div class="card-title">Live Progress</div>
+      <div class="progress-bar"><div class="progress-fill" id="blastProgress" style="width:0%"></div></div>
+      <div class="progress-text">
+        <span id="blastStats">0 / 0</span>
+        <span id="blastRate">0/s</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="num" id="blastSent">0</div><div class="lbl">Sent</div></div>
+        <div class="stat-box"><div class="num" id="blastFailed">0</div><div class="lbl">Failed</div></div>
+        <div class="stat-box"><div class="num" id="blastTotal">0</div><div class="lbl">Total</div></div>
+        <div class="stat-box"><div class="num" id="blastTime">0s</div><div class="lbl">Time</div></div>
+      </div>
+      <div class="live-status">
+        <div class="pulse"></div>
+        <span id="liveStatusText">Ready</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLANS -->
+  <div id="page-plans" class="tab-page">
+    <div class="card">
+      <div class="card-title">Buy Coins</div>
+      <div class="notice telegram">
+        After payment, tap <b>I Have Paid</b>. Admin will approve & coins will be added automatically.
+      </div>
+      <div class="plans-grid" id="plansGrid"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">My Orders</div>
+      <div id="myOrders">
+        <div style="text-align:center; color:var(--muted); font-size:12px; padding:20px;">No orders yet</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REDEEM -->
+  <div id="page-redeem" class="tab-page">
+    <div class="card">
+      <div class="card-title">Redeem Code</div>
+      <label>ENTER CODE</label>
+      <input type="text" id="redeemInput" placeholder="BOMB-XXXX-XXXX" style="text-transform:uppercase; letter-spacing:1px;">
+      <button class="btn btn-success" onclick="redeemCode()">🎁 REDEEM</button>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="page-admin" class="tab-page">
+    <div id="adminLogin" class="card">
+      <div class="admin-lock">
+        <div class="icon">🔐</div>
+        <div class="title">Admin Access</div>
+        <label>USERNAME</label>
+        <input type="text" id="adminUser" placeholder="Harsh">
+        <label>PASSWORD</label>
+        <input type="password" id="adminPass" placeholder="••••••••">
+        <button class="btn btn-primary" onclick="adminLogin()">LOGIN</button>
+      </div>
+    </div>
+
+    <div id="adminContent" class="hidden">
+      <div class="card">
+        <div class="flex-between">
+          <div class="card-title" style="margin:0">Admin Panel</div>
+          <span class="tag" id="adminUserTag">👑 ADMIN</span>
+        </div>
+        <button class="btn btn-ghost btn-sm mt-8" onclick="adminLogout()">Logout</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Pending Payments <span class="tag yellow" id="pendingNotice">0 pending</span></div>
+        <div id="pendingList">
+          <div style="text-align:center; color:var(--muted); font-size:12px; padding:20px;">No pending payments</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Generate Codes</div>
+        <div class="row">
+          <div style="flex:1">
+            <label>COINS</label>
+            <input type="number" id="genCoins" value="5000" min="1">
+          </div>
+          <div style="flex:1">
+            <label>COUNT</label>
+            <input type="number" id="genCount" value="10" min="1" max="100">
+          </div>
+        </div>
+        <label>PREFIX</label>
+        <input type="text" id="genPrefix" value="BOMB" maxlength="8">
+        <button class="btn btn-primary" onclick="generateCodes()">🔑 GENERATE</button>
+      </div>
+
+      <div class="card">
+        <div class="flex-between">
+          <div class="card-title" style="margin:0">Code List</div>
+          <span class="tag" id="codeCountTag">0 CODES</span>
+        </div>
+        <button class="btn btn-danger btn-sm mt-8" onclick="clearAllCodes()">Clear All</button>
+        <div class="code-list" id="codeList"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Global Stats</div>
+        <div class="stats-grid">
+          <div class="stat-box"><div class="num" id="gUsers">0</div><div class="lbl">Users</div></div>
+          <div class="stat-box"><div class="num" id="gTotalCodes">0</div><div class="lbl">Codes</div></div>
+          <div class="stat-box"><div class="num" id="gUsedCodes">0</div><div class="lbl">Used</div></div>
+          <div class="stat-box"><div class="num" id="gTotalCoins">0</div><div class="lbl">Distributed</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-card">
+    <div class="made">OWNER · MADE BY</div>
+    <div class="name">@Gtumz 🗿✅</div>
+  </div>
+</div>
+
+<a class="float-tg" href="https://t.me/+QFDVLzILF0NlMzRl" target="_blank">
+  <span class="dot"></span> 📢 Join Channel
+</a>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="qrModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeQrModal()">×</button>
+    <div class="modal-title">Complete Payment</div>
+    <div style="text-align:center; margin-bottom:10px;">
+      <div style="font-size:13px; color:var(--muted);">Scan QR or pay via UPI</div>
+      <div style="font-size:18px; font-weight:800; color:var(--success); margin-top:6px;" id="modalPrice">₹0</div>
+      <div style="font-size:12px; color:#a5b4fc; margin-top:4px;" id="modalPlanName">—</div>
+    </div>
+    <div class="qr-wrap">
+      <div id="qrLoading" style="color:#333;font-size:12px;">Loading QR…</div>
+      <img id="qrImage" style="display:none" alt="UPI QR">
+    </div>
+    <div style="text-align:center; margin:12px 0;">
+      <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">UPI ID</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#e2e8f0;" id="upiDisplay">—</div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:8px;" onclick="copyUpiId()">📋 Copy UPI</button>
+    </div>
+    <button class="btn btn-success" id="confirmPayBtn">✅ I HAVE PAID</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyDWgMkF_YItGJcxzN1tHfmVe__1yvfUHUw",
+  authDomain: "hostingweb-f2b4f.firebaseapp.com",
+  databaseURL: "https://hostingweb-f2b4f-default-rtdb.firebaseio.com",
+  projectId: "hostingweb-f2b4f",
+  storageBucket: "hostingweb-f2b4f.firebasestorage.app",
+  messagingSenderId: "707241453413",
+  appId: "1:707241453413:web:2086add015b040e1c6638c"
+};
+
+const BOMB_API = "https://costum-boomber-api.vercel.app/api";
+const ADMIN_USER = "Harsh";
+const ADMIN_PASS = "Harsh@05";
+const UPI_ID = "visheshvishwakarma04@okhdfcbank";
+const UPI_NAME = "Vishesh Vishwakarma";
+
+const PLANS = {
+  basic:     { name: "Basic",        coins: 5000,   price: 10,  popular: false },
+  popular:   { name: "Most Popular", coins: 30000,  price: 50,  popular: true  },
+  pro:       { name: "Pro",          coins: 90000,  price: 100, popular: false },
+  unlimited: { name: "Unlimited",    coins: -1,     price: 300, popular: false }
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const state = {
+  userId: null,
+  coins: 0,
+  unlimited: false,
+  blasting: false,
+  cancelled: false,
+  redeemCodes: {},
+  pendingPayments: {},
+  myOrders: {}
+};
+let isAdminLoggedIn = false;
+let appReady = false;
+
+// ═══════════════════════════════════════════════════════
+// USER
+// ═══════════════════════════════════════════════════════
+function initUserId() {
+  let id = localStorage.getItem('bomber_uid');
+  if (!id) {
+    id = 'U' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
+    localStorage.setItem('bomber_uid', id);
+  }
+  state.userId = id;
+  document.getElementById('userIdDisplay').textContent = 'ID: ' + id;
+}
+
+function loadUserData() {
+  const ref = db.ref('users/' + state.userId);
+  ref.on('value', (snap) => {
+    const data = snap.val() || {};
+    state.coins = data.coins || 0;
+    state.unlimited = !!data.unlimited;
+    updateCoinDisplay();
+    appReady = true;
+  });
+  ref.once('value').then(snap => {
+    if (!snap.exists()) {
+      ref.set({ coins: 100, unlimited: false, createdAt: Date.now() });
+    }
+  });
+}
+
+function updateCoinDisplay() {
+  const el = document.getElementById('coinDisplay');
+  if (state.unlimited) {
+    el.textContent = '♾️ UNLIMITED';
+  } else {
+    el.textContent = '💎 ' + state.coins.toLocaleString();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// COIN OPS
+// ═══════════════════════════════════════════════════════
+async function deductCoins(amount) {
+  if (state.unlimited) return { ok: true, newBalance: -1 };
+  const ref = db.ref('users/' + state.userId + '/coins');
+  let finalBalance = null;
+  let success = false;
+
+  await ref.transaction((current) => {
+    const cur = current || 0;
+    if (cur < amount) return;
+    finalBalance = cur - amount;
+    success = true;
+    return finalBalance;
+  });
+
+  if (!success) return { ok: false, error: 'Insufficient coins', newBalance: state.coins };
+  return { ok: true, newBalance: finalBalance };
+}
+
+async function addCoins(amount) {
+  if (state.unlimited) return { ok: true, newBalance: -1 };
+  const ref = db.ref('users/' + state.userId + '/coins');
+  let newBal = 0;
+  await ref.transaction((current) => {
+    newBal = (current || 0) + amount;
+    return newBal;
+  });
+  return { ok: true, newBalance: newBal };
+}
+
+async function addSentCount(n) {
+  await db.ref('users/' + state.userId + '/totalSent').transaction(c => (c || 0) + n);
+}
+
+// ═══════════════════════════════════════════════════════
+// BLAST
+// ═══════════════════════════════════════════════════════
+async function callBombApi(number, message, count) {
+  try {
+    const url = BOMB_API + '?count=' + count +
+                '&msg=' + encodeURIComponent(message) +
+                '&number=' + encodeURIComponent(number);
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 30000);
+    const res = await fetch(url, { signal: ctrl.signal });
+    clearTimeout(t);
+    if (res.status >= 200 && res.status < 300) {
+      return { ok: true, data: await res.text() };
+    }
+    return { ok: false, error: 'HTTP ' + res.status };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+}
+
+async function startBlast() {
+  if (state.blasting) return;
+  if (!appReady) { toast('⏳ Still loading… try again', 'error'); return; }
+
+  const number = document.getElementById('targetNum').value.trim().replace(/\D/g, '');
+  const message = document.getElementById('msgText').value.trim();
+  const count = parseInt(document.getElementById('smsCount').value) || 10;
+  const speed = parseInt(document.getElementById('sendSpeed').value) || 200;
+
+  if (!number || number.length < 10) {
+    toast('❌ Enter a valid number (e.g. 919876543210)', 'error');
+    return;
+  }
+  if (!message) { toast('Message required', 'error'); return; }
+
+  const freshSnap = await db.ref('users/' + state.userId + '/coins').once('value');
+  const freshCoins = freshSnap.val() || 0;
+  const freshUnlimSnap = await db.ref('users/' + state.userId + '/unlimited').once('value');
+  const freshUnlim = !!freshUnlimSnap.val();
+
+  if (!freshUnlim && freshCoins < count) {
+    toast('❌ Need ' + count + ' coins, you have ' + freshCoins, 'error');
+    return;
+  }
+
+  // ✅ UPFRONT DEDUCTION — no refund, ever
+  if (!freshUnlim) {
+    const result = await deductCoins(count);
+    if (!result.ok) {
+      toast('❌ ' + (result.error || 'Deduction failed'), 'error');
+      return;
+    }
+    toast('💰 ' + count + ' coins deducted — Balance: ' + result.newBalance, 'success');
+    await new Promise(r => setTimeout(r, 400));
+  }
+
+  state.blasting = true;
+  state.cancelled = false;
+
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('stopBtn').disabled = false;
+  document.getElementById('progressCard').style.display = 'block';
+  document.getElementById('blastProgress').style.width = '0%';
+  document.getElementById('blastStats').textContent = '0 / ' + count;
+  document.getElementById('blastSent').textContent = '0';
+  document.getElementById('blastFailed').textContent = '0';
+  document.getElementById('blastTotal').textContent = '0';
+  document.getElementById('blastTime').textContent = '0s';
+  document.getElementById('liveStatusText').textContent = 'Blasting ' + count + ' SMS…';
+
+  const t0 = Date.now();
+  let sent = 0, failed = 0;
+
+  for (let i = 0; i < count; i++) {
+    if (state.cancelled) break;
+
+    const result = await callBombApi(number, message, 1);
+
+    if (result.ok) sent++;
+    else failed++;
+
+    const total = sent + failed;
+    document.getElementById('blastProgress').style.width = (total / count * 100) + '%';
+    document.getElementById('blastStats').textContent = total + ' / ' + count;
+    document.getElementById('blastSent').textContent = sent;
+    document.getElementById('blastFailed').textContent = failed;
+    document.getElementById('blastTotal').textContent = total;
+    document.getElementById('blastTime').textContent = ((Date.now() - t0) / 1000).toFixed(0) + 's';
+    document.getElementById('blastRate').textContent = (total / Math.max((Date.now() - t0) / 1000, 1)).toFixed(1) + '/s';
+
+    if (i < count - 1 && !state.cancelled) {
+      await new Promise(r => setTimeout(r, speed));
+    }
+  }
+
+  state.blasting = false;
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('stopBtn').disabled = true;
+
+  // ✅ NO REFUND — coins deducted, deducted.
+  if (state.cancelled) {
+    document.getElementById('liveStatusText').textContent = 'Stopped · ' + sent + ' sent · ' + failed + ' skipped';
+    toast('🛑 Stopped — no refund', 'warn');
+  } else {
+    document.getElementById('liveStatusText').textContent = 'Done · ' + sent + ' sent · ' + failed + ' failed';
+    toast('✅ ' + sent + ' sent · ' + failed + ' failed', 'success');
+  }
+
+  await addSentCount(sent);
+}
+
+function stopBlast() {
+  if (!state.blasting) return;
+  state.cancelled = true;
+  toast('🛑 Stopping… (no refund)', 'warn');
+}
+
+// ═══════════════════════════════════════════════════════
+// REDEEM
+// ═══════════════════════════════════════════════════════
+async function redeemCode() {
+  const code = document.getElementById('redeemInput').value.trim().toUpperCase();
+  if (!code) { toast('Enter a code', 'error'); return; }
+
+  const ref = db.ref('redeem_codes/' + code);
+  const snap = await ref.once('value');
+  const data = snap.val();
+
+  if (!data) { toast('❌ Invalid code', 'error'); return; }
+  if (data.used) { toast('❌ Code already used', 'error'); return; }
+
+  await ref.update({ used: true, usedBy: state.userId, usedAt: Date.now() });
+
+  if (data.coins === -1) {
+    await db.ref('users/' + state.userId + '/unlimited').set(true);
+    toast('♾️ Unlimited activated!', 'success');
+  } else {
+    const r = await addCoins(data.coins);
+    toast('🎁 +' + data.coins.toLocaleString() + ' coins! Balance: ' + r.newBalance, 'success');
+  }
+  document.getElementById('redeemInput').value = '';
+}
+
+// ═══════════════════════════════════════════════════════
+// PLANS + QR
+// ═══════════════════════════════════════════════════════
+function renderPlans() {
+  const grid = document.getElementById('plansGrid');
+  grid.innerHTML = Object.entries(PLANS).map(function(entry) {
+    const key = entry[0];
+    const p = entry[1];
+    const cls = p.coins === -1 ? 'unlimited' : (p.popular ? 'popular' : '');
+    const coinTxt = p.coins === -1 ? '♾️' : p.coins.toLocaleString();
+    const coinLbl = p.coins === -1 ? 'LIFETIME' : 'COINS';
+    return '<div class="plan-card ' + cls + '" onclick="openQrModal(\'' + key + '\')">' +
+      '<div class="plan-name">' + p.name + '</div>' +
+      '<div class="plan-coins">' + coinTxt + '</div>' +
+      '<div class="plan-coins-lbl">' + coinLbl + '</div>' +
+      '<div class="plan-price">₹' + p.price + '</div>' +
+      '<button class="plan-buy-btn">Buy Now</button>' +
+    '</div>';
+  }).join('');
+}
+
+function openQrModal(planKey) {
+  const plan = PLANS[planKey];
+  if (!plan) return;
+
+  document.getElementById('modalPrice').textContent = '₹' + plan.price;
+  document.getElementById('modalPlanName').textContent =
+    plan.name + (plan.coins === -1 ? ' · Lifetime Unlimited' : ' · ' + plan.coins.toLocaleString() + ' coins');
+  document.getElementById('upiDisplay').textContent = UPI_ID;
+  document.getElementById('confirmPayBtn').onclick = function() { confirmPayment(planKey); };
+
+  const upiLink =
+    'upi://pay?pa=' + encodeURIComponent(UPI_ID) +
+    '&pn=' + encodeURIComponent(UPI_NAME) +
+    '&am=' + plan.price +
+    '&cu=INR' +
+    '&tn=' + encodeURIComponent('Bomber ' + plan.name);
+
+  const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(upiLink) + '&margin=10';
+  const qrFallback = 'https://quickchart.io/qr?text=' + encodeURIComponent(upiLink) + '&size=400&margin=1';
+
+  const img = document.getElementById('qrImage');
+  const loading = document.getElementById('qrLoading');
+  loading.style.display = 'block';
+  loading.textContent = 'Loading QR…';
+  img.style.display = 'none';
+  img.onload = function() {
+    loading.style.display = 'none';
+    img.style.display = 'block';
+  };
+  img.onerror = function() {
+    if (img.src.indexOf('qrserver.com') > -1) {
+      img.src = qrFallback;
+      return;
+    }
+    loading.innerHTML = '<div style="color:#333;font-size:11px;text-align:center;padding:10px;line-height:1.5;">⚠️ QR load failed<br><br><b>UPI ID copy karke pay karo:</b><br><span style="font-family:monospace;color:#0088cc;font-weight:700;">' + UPI_ID + '</span></div>';
+    loading.style.display = 'block';
+    img.style.display = 'none';
+  };
+  img.src = qrUrl;
+
+  document.getElementById('qrModal').classList.add('show');
+}
+
+function closeQrModal() {
+  document.getElementById('qrModal').classList.remove('show');
+}
+
+function copyUpiId() {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(UPI_ID).then(function() { toast('📋 UPI copied', 'success'); });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = UPI_ID;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('📋 UPI copied', 'success');
+  }
+}
+
+async function confirmPayment(planKey) {
+  const plan = PLANS[planKey];
+  if (!plan) return;
+
+  const orderId = 'ORD' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase();
+  const paymentData = {
+    orderId: orderId, userId: state.userId, planKey: planKey,
+    planName: plan.name, coins: plan.coins, price: plan.price,
+    status: 'pending', createdAt: Date.now()
+  };
+
+  await db.ref('pending_payments/' + orderId).set(paymentData);
+  await db.ref('users/' + state.userId + '/orders/' + orderId).set({
+    orderId: orderId, planName: plan.name, coins: plan.coins, price: plan.price,
+    status: 'pending', createdAt: Date.now()
+  });
+
+  closeQrModal();
+  toast('✅ Payment submitted — wait for admin approval', 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+// ORDERS
+// ═══════════════════════════════════════════════════════
+function loadMyOrders() {
+  db.ref('users/' + state.userId + '/orders').on('value', function(snap) {
+    state.myOrders = snap.val() || {};
+    renderMyOrders();
+  });
+}
+
+function renderMyOrders() {
+  const el = document.getElementById('myOrders');
+  const orders = state.myOrders;
+  const keys = Object.keys(orders).sort(function(a, b) {
+    return (orders[b].createdAt || 0) - (orders[a].createdAt || 0);
+  });
+
+  if (keys.length === 0) {
+    el.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:12px; padding:20px;">No orders yet</div>';
+    return;
+  }
+
+  el.innerHTML = keys.map(function(k) {
+    const o = orders[k];
+    let color = '#fbbf24', text = '⏳ PENDING';
+    if (o.status === 'approved') { color = '#34d399'; text = '✅ APPROVED'; }
+    else if (o.status === 'rejected') { color = '#fb7185'; text = '❌ REJECTED'; }
+    const coinsTxt = o.coins === -1 ? '♾️ LIFETIME' : o.coins.toLocaleString();
+    return '<div class="pending-item">' +
+      '<div class="row-top">' +
+        '<span class="uid">' + o.orderId + '</span>' +
+        '<span class="plan-badge" style="color:' + color + '; border:1px solid ' + color + ';">' + text + '</span>' +
+      '</div>' +
+      '<div class="details">' +
+        '💎 <b>' + o.planName + '</b><br>' +
+        '💰 Coins: <code>' + coinsTxt + '</code><br>' +
+        '💵 Paid: <code>₹' + o.price + '</code>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════════════════
+function adminLogin() {
+  const u = document.getElementById('adminUser').value.trim();
+  const p = document.getElementById('adminPass').value;
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    isAdminLoggedIn = true;
+    document.getElementById('adminLogin').classList.add('hidden');
+    document.getElementById('adminContent').classList.remove('hidden');
+    document.getElementById('adminUserTag').textContent = '👑 ' + u.toUpperCase();
+    toast('✅ Admin logged in', 'success');
+    loadPendingPayments();
+  } else {
+    toast('❌ Invalid credentials', 'error');
+  }
+}
+
+function adminLogout() {
+  isAdminLoggedIn = false;
+  document.getElementById('adminLogin').classList.remove('hidden');
+  document.getElementById('adminContent').classList.add('hidden');
+  document.getElementById('adminUser').value = '';
+  document.getElementById('adminPass').value = '';
+  toast('Logged out', 'info');
+}
+
+function loadPendingPayments() {
+  db.ref('pending_payments').on('value', function(snap) {
+    state.pendingPayments = snap.val() || {};
+    renderPendingPayments();
+  });
+}
+
+function renderPendingPayments() {
+  const el = document.getElementById('pendingList');
+  const payments = state.pendingPayments;
+  const keys = Object.keys(payments)
+    .filter(function(k) { return payments[k].status === 'pending'; })
+    .sort(function(a, b) { return (payments[b].createdAt || 0) - (payments[a].createdAt || 0); });
+
+  document.getElementById('pendingNotice').textContent =
+    keys.length ? keys.length + ' pending' : '0 pending';
+
+  if (keys.length === 0) {
+    el.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:12px; padding:20px;">No pending payments</div>';
+    return;
+  }
+
+  el.innerHTML = keys.map(function(orderId) {
+    const p = payments[orderId];
+    const timeStr = new Date(p.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const coinsTxt = p.coins === -1 ? '♾️ LIFETIME' : p.coins.toLocaleString();
+    return '<div class="pending-item">' +
+      '<div class="row-top">' +
+        '<span class="uid">' + p.userId + '</span>' +
+        '<span class="plan-badge">' + p.planName + '</span>' +
+      '</div>' +
+      '<div class="details">' +
+        '🔑 Order: <code>' + orderId + '</code><br>' +
+        '💎 Plan: <code>' + p.planName + '</code><br>' +
+        '💰 Coins: <code>' + coinsTxt + '</code><br>' +
+        '💵 Amount: <code>₹' + p.price + '</code><br>' +
+        '⏰ ' + timeStr +
+      '</div>' +
+      '<div class="pending-actions">' +
+        '<button class="btn-approve" onclick="approvePayment(\'' + orderId + '\')">✅ APPROVE</button>' +
+        '<button class="btn-reject" onclick="rejectPayment(\'' + orderId + '\')">❌ REJECT</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function approvePayment(orderId) {
+  if (!isAdminLoggedIn) return;
+  if (!confirm('Approve ' + orderId + '?')) return;
+
+  const ref = db.ref('pending_payments/' + orderId);
+  const snap = await ref.once('value');
+  const p = snap.val();
+  if (!p || p.status !== 'pending') { toast('Already processed', 'error'); return; }
+
+  if (p.coins === -1) {
+    await db.ref('users/' + p.userId + '/unlimited').set(true);
+  } else {
+    await db.ref('users/' + p.userId + '/coins').transaction(function(c) { return (c || 0) + p.coins; });
+  }
+
+  await ref.update({ status: 'approved', approvedAt: Date.now() });
+  await db.ref('users/' + p.userId + '/orders/' + orderId).update({ status: 'approved', approvedAt: Date.now() });
+  toast('✅ Approved — ' + (p.coins === -1 ? 'Lifetime Unlimited' : p.coins.toLocaleString() + ' coins') + ' added', 'success');
+}
+
+async function rejectPayment(orderId) {
+  if (!isAdminLoggedIn) return;
+  if (!confirm('Reject ' + orderId + '?')) return;
+
+  const ref = db.ref('pending_payments/' + orderId);
+  const snap = await ref.once('value');
+  const p = snap.val();
+  if (!p || p.status !== 'pending') { toast('Already processed', 'error'); return; }
+
+  await ref.update({ status: 'rejected', rejectedAt: Date.now() });
+  await db.ref('users/' + p.userId + '/orders/' + orderId).update({ status: 'rejected', rejectedAt: Date.now() });
+  toast('❌ Rejected', 'warn');
+}
+
+// ═══════════════════════════════════════════════════════
+// CODES
+// ═══════════════════════════════════════════════════════
+function randomSegment(len) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s = '';
+  for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  return s;
+}
+
+async function generateCodes() {
+  if (!isAdminLoggedIn) { toast('Login first', 'error'); return; }
+  const coins = parseInt(document.getElementById('genCoins').value) || 5000;
+  const count = Math.min(parseInt(document.getElementById('genCount').value) || 10, 100);
+  const prefix = (document.getElementById('genPrefix').value.trim() || 'BOMB').toUpperCase();
+
+  const ref = db.ref('redeem_codes');
+  for (let i = 0; i < count; i++) {
+    const code = prefix + '-' + randomSegment(4) + '-' + randomSegment(4);
+    await ref.child(code).set({
+      coins: coins, used: false, createdBy: ADMIN_USER, createdAt: Date.now()
+    });
+  }
+  toast('✅ ' + count + ' codes × ' + coins.toLocaleString() + ' coins', 'success');
+}
+
+async function deleteCode(code) {
+  if (!isAdminLoggedIn) return;
+  if (!confirm('Delete ' + code + '?')) return;
+  await db.ref('redeem_codes/' + code).remove();
+  toast('🗑 Deleted', 'warn');
+}
+
+async function clearAllCodes() {
+  if (!isAdminLoggedIn) return;
+  if (!confirm('Delete ALL codes?')) return;
+  await db.ref('redeem_codes').remove();
+  toast('🗑 Cleared', 'warn');
+}
+
+function loadRedeemCodes() {
+  db.ref('redeem_codes').on('value', function(snap) {
+    state.redeemCodes = snap.val() || {};
+    renderCodeList();
+    renderGlobalStats();
+  });
+}
+
+function renderCodeList() {
+  const list = document.getElementById('codeList');
+  if (!list) return;
+  const codes = state.redeemCodes;
+  const keys = Object.keys(codes).sort(function(a, b) {
+    return (codes[b].createdAt || 0) - (codes[a].createdAt || 0);
+  });
+  document.getElementById('codeCountTag').textContent = keys.length + ' CODES';
+
+  if (keys.length === 0) {
+    list.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:12px; padding:20px;">No codes yet</div>';
+    return;
+  }
+
+  list.innerHTML = keys.slice(0, 50).map(function(code) {
+    const c = codes[code];
+    const cls = c.used ? 'used' : '';
+    const usedInfo = c.used ? ' · used by ' + (c.usedBy || '?') : '';
+    return '<div class="code-item ' + cls + '">' +
+      '<div style="flex:1; min-width:0;">' +
+        '<div class="code">' + escapeHtml(code) + '</div>' +
+        '<div class="info">💰 ' + c.coins.toLocaleString() + ' coins' + usedInfo + '</div>' +
+      '</div>' +
+      '<button class="btn btn-danger btn-sm" onclick="deleteCode(\'' + escapeHtml(code) + '\')">🗑</button>' +
+    '</div>';
+  }).join('');
+}
+
+function renderGlobalStats() {
+  const codes = state.redeemCodes;
+  const keys = Object.keys(codes);
+  let used = 0, coinsDist = 0;
+  keys.forEach(function(k) {
+    if (codes[k].used) { used++; coinsDist += (codes[k].coins || 0); }
+  });
+  const el = function(id) { return document.getElementById(id); };
+  if (el('gTotalCodes')) el('gTotalCodes').textContent = keys.length;
+  if (el('gUsedCodes')) el('gUsedCodes').textContent = used;
+  if (el('gTotalCoins')) el('gTotalCoins').textContent = coinsDist.toLocaleString();
+
+  db.ref('users').once('value').then(function(snap) {
+    if (el('gUsers')) el('gUsers').textContent = Object.keys(snap.val() || {}).length;
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════
+function switchTab(name) {
+  const names = ['bomber', 'plans', 'redeem', 'admin'];
+  document.querySelectorAll('.tab').forEach(function(t, i) {
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-page').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('page-' + name).classList.add('active');
+}
+
+let toastTimer = null;
+function toast(msg, type) {
+  type = type || 'info';
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { el.className = 'toast'; }, 3200);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, function(c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════
+initUserId();
+loadUserData();
+loadRedeemCodes();
+loadMyOrders();
+renderPlans();
+</script>
+</body>
+</html>
