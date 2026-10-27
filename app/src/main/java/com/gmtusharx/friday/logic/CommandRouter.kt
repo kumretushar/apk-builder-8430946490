@@ -4,15 +4,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-sealed interface Command {
-    data class PlayYouTube(val query: String) : Command
-    data class WebSearch(val query: String) : Command
-    data class OpenApp(val name: String) : Command
-    data object Status : Command
-    data class Reply(val text: String) : Command
-}
+// Command sealed interface alag file (Command.kt) mein hai — import ki zaroorat nahi
+// kyunki same package mein hai.
 
-/** Lower-cases, strips punctuation and transliterates common Devanagari command words to Roman. */
 object Normalizer {
     private val tokenMap = mapOf(
         "यूट्यूब" to "youtube", "यूटूब" to "youtube", "युट्यूब" to "youtube",
@@ -25,7 +19,9 @@ object Normalizer {
         "तुझे" to "tujhe", "तुम्हारा" to "tumhara", "आपका" to "aapka", "तेरा" to "tera",
         "डेवलपर" to "developer", "क्रिएटर" to "creator", "कौन" to "kaun", "हो" to "ho", "है" to "hai",
         "तुम" to "tum", "आप" to "aap", "नमस्ते" to "namaste", "क्या" to "kya", "समय" to "samay",
-        "टाइम" to "time", "बजे" to "baje", "कितने" to "kitne"
+        "टाइम" to "time", "बजे" to "baje", "कितने" to "kitne",
+        "कॉल" to "call", "मैसेज" to "message", "अलार्म" to "alarm",
+        "कैमरा" to "camera", "फोटो" to "photo", "तस्वीर" to "photo"
     )
     private val junk = Regex("""[^\p{L}\p{M}\p{N}\s']""")
     private val spaces = Regex("""\s+""")
@@ -38,11 +34,6 @@ object Normalizer {
             .joinToString(" ") { tokenMap[it] ?: it }
 }
 
-/**
- * Rule-based router. Order matters:
- * explicit YouTube -> developer check -> open app -> web search -> "play X" -> status -> small talk.
- * To plug in an LLM later, replace the final `Unknown` branch with a call to your model.
- */
 class CommandRouter {
 
     private val wake = Regex("""^(?:(?:hey|hi|hello|ok|okay)\s+)?friday\b\s*""")
@@ -53,9 +44,9 @@ class CommandRouter {
     )
 
     private val ytPatterns = listOf(
-        Regex("""^(?:play|search|watch)\s+(.+?)\s+(?:on|in)\s+youtube$"""),          // play X on youtube
-        Regex("""^youtube\s+(?:par|pe|per|pr|mein|me|se)\s+(.+)$"""),                // youtube par X (chalao)
-        Regex("""^(.+?)\s+youtube\s+(?:par|pe|per|pr|mein|me)(?:\s+.*)?$""")         // X youtube par chalao
+        Regex("""^(?:play|search|watch)\s+(.+?)\s+(?:on|in)\s+youtube$"""),
+        Regex("""^youtube\s+(?:par|pe|per|pr|mein|me|se)\s+(.+)$"""),
+        Regex("""^(.+?)\s+youtube\s+(?:par|pe|per|pr|mein|me)(?:\s+.*)?$""")
     )
     private val openPatterns = listOf(
         Regex("""^(?:open|launch|start)\s+(.+)$"""),
@@ -66,6 +57,13 @@ class CommandRouter {
         Regex("""^(?:web\s+(?:par|pe)\s+)?(.+?)\s+(?:search karo|search kar do|search kar|google karo|google kar do|dhundo|dhoondo|khojo)$""")
     )
     private val playGeneric = Regex("""^play\s+(.+)$""")
+
+    private val callPattern = Regex("""^(.+?)\s+(?:ko\s+)?(?:call|phone)\s+(?:karo|kar do|kar|lagao|lag do)$""")
+    private val waPattern = Regex("""^(.+?)\s+(?:ko\s+)?whatsapp\s+(?:karo|kar do|kar|bhejo|bhej do|kholo|khol)$""")
+    private val smsPattern = Regex("""^(.+?)\s+(?:ko\s+)?(?:sms|message)\s+(?:bhejo|bhej do|karo|kar)\s*(.*)$""")
+    private val alarmPattern = Regex("""^(.+?)\s+(?:ka\s+)?alarm\s+(?:lagao|lag do|set karo|set kar do)$""")
+    private val cameraRegex = Regex("""^(?:camera|kamera)\s+(?:kholo|khol|open karo|open kar)$""")
+    private val photosRegex = Regex("""^(?:photo|photos|gallery|tasveer)\s+(?:kholo|khol|open karo|open kar|dikhao)$""")
 
     private fun stripTrailing(s: String): String {
         var t = s
@@ -78,64 +76,82 @@ class CommandRouter {
         val hadWake = wake.containsMatchIn(n)
         n = wake.replace(n, "").trim()
         if (n.isEmpty()) {
-            return Command.Reply(if (hadWake) "Ji, boliye! Main sun rahi hoon." else "Mujhe kuch sunai nahi diya. Dobara bolein?")
+            return Command.Reply(
+                if (hadWake) "Ji, boliye! Main sun rahi hoon."
+                else "Mujhe kuch sunai nahi diya. Dobara bolein?"
+            )
         }
 
         val yt = stripTrailing(n)
 
-        // 1) Explicit YouTube commands
         if (yt == "youtube" || yt == "youtube par") return Command.OpenApp("youtube")
         for (p in ytPatterns) {
             val q = p.find(yt)?.groupValues?.get(1)?.trim().orEmpty()
             if (q.isNotEmpty()) return Command.PlayYouTube(q)
         }
 
-        // 2) Developer / creator identity
         if (DeveloperCheck.isAsking(n)) return Command.Reply(DeveloperCheck.answer(raw))
 
-        // 3) Open app
+        callPattern.find(n)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotEmpty() }
+            ?.let { return Command.Call(it) }
+
+        waPattern.find(n)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotEmpty() }
+            ?.let { return Command.WhatsApp(it) }
+
+        smsPattern.find(n)?.let {
+            val name = it.groupValues[1].trim()
+            val msg = it.groupValues[2].trim()
+            if (name.isNotEmpty()) return Command.Sms(name, msg)
+        }
+
+        alarmPattern.find(n)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotEmpty() }
+            ?.let { return Command.SetAlarm(it) }
+
+        if (cameraRegex.containsMatchIn(n)) return Command.OpenCamera
+        if (photosRegex.containsMatchIn(n)) return Command.OpenPhotos
+
         for (p in openPatterns) {
             val name = p.find(n)?.groupValues?.get(1)?.trim().orEmpty()
             if (name.isNotEmpty()) return Command.OpenApp(name)
         }
 
-        // 4) Web search
         for (p in searchPatterns) {
             val q = p.find(n)?.groupValues?.get(1)?.trim().orEmpty()
             if (q.isNotEmpty()) return Command.WebSearch(q)
         }
 
-        // 5) Generic "play X" -> YouTube
         playGeneric.find(yt)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotEmpty() }
             ?.let { return Command.PlayYouTube(it) }
 
-        // 6) Status
         if (Regex("""\b(status|battery|system check)\b""").containsMatchIn(n)) return Command.Status
 
-        // 7) Small talk
-        return smallTalk(n)
+        return smallTalk(n, raw)
     }
 
-    private fun smallTalk(n: String): Command.Reply {
+    private fun smallTalk(n: String, raw: String): Command {
         val timeFmt = SimpleDateFormat("hh:mm a", Locale.getDefault())
         val dateFmt = SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault())
-        val text = when {
+
+        return when {
             Regex("""\b(thank|thanks|shukriya|dhanyavad|dhanyawad)\b""").containsMatchIn(n) ->
-                "Aapka swagat hai! Aur kuch chahiye toh bataiye."
+                Command.Reply("Aapka swagat hai! Aur kuch chahiye toh bataiye.")
+
             Regex("""(what time|time kya|kitne baje|samay kya|current time)""").containsMatchIn(n) ->
-                "Abhi ${timeFmt.format(Date())} ho rahe hain."
+                Command.Reply("Abhi ${timeFmt.format(Date())} ho rahe hain.")
+
             Regex("""(what date|aaj ki tarikh|today's date|date kya|aaj kaun sa din)""").containsMatchIn(n) ->
-                "Aaj ${dateFmt.format(Date())} hai."
+                Command.Reply("Aaj ${dateFmt.format(Date())} hai.")
+
             Regex("""(who are you|tum kaun ho|aap kaun ho|tu kaun hai|your name|tumhara naam|aapka naam|apna naam)""").containsMatchIn(n) ->
-                "Main Friday hoon, aapki personal AI assistant. Mujhe ${DeveloperCheck.DEVELOPER} ne banaya hai."
+                Command.Reply("Main Friday hoon, aapki personal AI assistant. Mujhe ${DeveloperCheck.DEVELOPER} ne banaya hai.")
+
             Regex("""(how are you|how r u|kaise ho|kaisi ho|kya haal|kya hal)""").containsMatchIn(n) ->
-                "Main bilkul theek hoon, shukriya! Aap sunaiye, kaisa chal raha hai?"
+                Command.Reply("Main bilkul theek hoon, shukriya! Aap sunaiye, kaisa chal raha hai?")
+
             Regex("""^(hi+|hello|hey|namaste|namaskar|salaam|good (morning|afternoon|evening|night))\b""").containsMatchIn(n) ->
-                "Namaste! Boliye, main aapki kya madad kar sakti hoon?"
-            else ->
-                "Maaf kijiye, main ye samajh nahi paayi. Aap keh sakte hain: \"YouTube par Arijit Singh ke gaane chalao\", " +
-                    "\"Google par weather search karo\", ya \"WhatsApp kholo\"."
+                Command.Reply("Namaste! Boliye, main aapki kya madad kar sakti hoon?")
+
+            else -> Command.Gemini(raw)
         }
-        return Command.Reply(text)
     }
 }
